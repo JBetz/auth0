@@ -7,7 +7,6 @@ module Auth0.Authentication.Passwordless where
 import Control.Monad.Catch (MonadThrow)
 import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson
-import Data.Aeson.Types
 import Data.Text
 import Data.Map
 import GHC.Generics
@@ -53,9 +52,9 @@ instance ToJSON GetCodeOrLink where
 runGetCodeOrLink
   :: (MonadIO m, MonadThrow m)
   => Auth -> GetCodeOrLink -> m (Auth0Response ())
-runGetCodeOrLink a o =
+runGetCodeOrLink (Auth tenant) o =
   let api = API Post "/passwordless/start"
-  in execRequest a api (Nothing :: Maybe ()) (Just o) Nothing
+  in execRequest tenant api (Nothing :: Maybe ()) (Just o) Nothing
 
 -- POST /oauth/ro
 
@@ -76,6 +75,6 @@ instance ToJSON AuthenticateUser where
 runAuthenticateUser
   :: (MonadIO m, MonadThrow m)
   => Auth -> AuthenticateUser -> m (Auth0Response ())
-runAuthenticateUser a o =
+runAuthenticateUser (Auth tenant) o =
   let api = API Post "/oauth/ro"
-  in execRequest a api (Nothing :: Maybe ()) (Just o) Nothing
+  in execRequest tenant api (Nothing :: Maybe ()) (Just o) Nothing

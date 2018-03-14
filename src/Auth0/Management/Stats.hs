@@ -6,7 +6,6 @@ module Auth0.Management.Stats where
 import Control.Monad.Catch (MonadThrow)
 import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson
-import Data.Aeson.Types
 import Data.Text
 import GHC.Generics
 --------------------------------------------------------------------------------
@@ -19,10 +18,10 @@ import Auth0.Types
 
 runGetStatsActiveUsers
   :: (MonadIO m, MonadThrow m)
-  => Auth -> m (Auth0Response Int)
-runGetStatsActiveUsers a =
+  => TokenAuth -> m (Auth0Response Int)
+runGetStatsActiveUsers (TokenAuth tenant accessToken) =
   let api = API Get "/api/v2/stats/active-users"
-  in execRequest a api (Nothing :: Maybe ()) (Nothing :: Maybe ()) Nothing
+  in execRequest tenant api (Nothing :: Maybe ()) (Nothing :: Maybe ()) (Just [mkAuthHeader accessToken])
 
 --------------------------------------------------------------------------------
 -- GET /api/v2/stats/daily
@@ -51,7 +50,7 @@ instance FromJSON StatsDailyResponse where
 
 runGetStatsDaily
   :: (MonadIO m, MonadThrow m)
-  => Auth -> StatsDaily -> m (Auth0Response [StatsDailyResponse])
-runGetStatsDaily a o =
+  => TokenAuth -> StatsDaily -> m (Auth0Response [StatsDailyResponse])
+runGetStatsDaily (TokenAuth tenant accessToken) o =
   let api = API Get "/api/v2/stats/daily"
-  in execRequest a api (Just o) (Nothing :: Maybe ()) Nothing
+  in execRequest tenant api (Just o) (Nothing :: Maybe ()) (Just [mkAuthHeader accessToken])

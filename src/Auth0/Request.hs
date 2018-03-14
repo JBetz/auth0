@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Auth0.Request where
 
@@ -27,19 +28,19 @@ flattenMap t = fmap (\(k, v) -> (t <> "[" <> k <> "]", Just v)) . toList
 -- | Execute a request against an API endpoint.
 execRequest
   :: (MonadIO m, MonadThrow m, ToRequest a, ToJSON b, FromJSON c, Show b)
-  => Auth                             -- ^ Tenant to connect to
+  => Tenant                           -- ^ Tenant to connect to
   -> API                              -- ^ API call - (API "POST" "/api")
   -> Maybe a                          -- ^ Optional request query
   -> Maybe b                          -- ^ Optional JSON payload
   -> Maybe [(HeaderName, ByteString)] -- ^ Optional headers
   -> m (Auth0Response c)              -- ^ Response
-execRequest (Auth t) (API m p) a b hs = do
+execRequest t (API m p) a b hs = do
   let req = (setRequestMethod . encodeUtf8 . T.pack . show) m
           . (setRequestHost . untag) t
-          . setRequestPort 443 
+          . setRequestPort 443
           . setRequestSecure True
           . setRequestPath p
-          . (\r -> maybe r (\a' -> (setRequestQueryString . buildRequest) a' r) a)
+          . maybe id (setRequestQueryString . buildRequest) a
           . setRequestBodyJSON b
           . setRequestHeaders (fromMaybe [] hs)
           $ defaultRequest

@@ -7,7 +7,6 @@ module Auth0.Authentication.GetToken where
 import Control.Monad.Catch (MonadThrow)
 import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson
-import Data.Aeson.Types
 import Data.Text
 import GHC.Generics
 --------------------------------------------------------------------------------
@@ -107,9 +106,9 @@ instance FromJSON GetTokenResponse where
 runGetToken
   :: (MonadIO m, MonadThrow m, ToJSON a, Show a)
   => Auth -> a -> m (Auth0Response GetTokenResponse)
-runGetToken a o =
+runGetToken (Auth tenant) o =
   let api = API Post "/oauth/token"
-  in execRequest a api (Nothing :: Maybe ()) (Just o) Nothing
+  in execRequest tenant api (Nothing :: Maybe ()) (Just o) Nothing
 
 --------------------------------------------------------------------------------
 -- POST /mfa/challenge
@@ -145,9 +144,9 @@ runGetTokenMFA
   :: (MonadIO m, MonadThrow m)
   => Auth -> GetTokenResourceOwnerMFA
   -> m (Auth0Response GetTokenResourceOwnerMFAResponse)
-runGetTokenMFA a o =
+runGetTokenMFA (Auth tenant) o =
   let api = API Post "/mfa/challenge"
-  in execRequest a api (Nothing :: Maybe ()) (Just o) Nothing
+  in execRequest tenant api (Nothing :: Maybe ()) (Just o) Nothing
 
 --------------------------------------------------------------------------------
 -- POST /oauth/token

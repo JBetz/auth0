@@ -6,7 +6,6 @@ module Auth0.Authentication.ChangePassword where
 import Control.Monad.Catch (MonadThrow)
 import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson
-import Data.Aeson.Types
 import Data.Text
 import GHC.Generics
 --------------------------------------------------------------------------------
@@ -31,6 +30,6 @@ instance ToJSON ChangePassword where
 runChangePassword
   :: (MonadIO m, MonadThrow m)
   => Auth -> ChangePassword -> m (Auth0Response ())
-runChangePassword a o =
+runChangePassword (Auth tenant) o =
   let api = API Post "/dbconnections/change_password"
-  in execRequest a api (Nothing :: Maybe ()) (Just o) Nothing
+  in execRequest tenant api (Nothing :: Maybe ()) (Just o) Nothing

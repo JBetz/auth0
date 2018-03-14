@@ -7,7 +7,6 @@ module Auth0.Management.Grants where
 import Control.Monad.Catch (MonadThrow)
 import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson
-import Data.Aeson.Types
 import Data.Monoid ((<>))
 import Data.Text
 import Data.Text.Encoding
@@ -41,24 +40,24 @@ data GrantResponse
   , audience :: Text
   , scope    :: [Text]
   } deriving (Generic, Show)
-  
+
 instance FromJSON GrantResponse where
   parseJSON =
     genericParseJSON defaultOptions { fieldLabelModifier = camelTo2 '_' }
 
 runGetGrants
   :: (MonadIO m, MonadThrow m)
-  => Auth -> Grant -> m (Auth0Response [GrantResponse])
-runGetGrants a o =
+  => TokenAuth -> Grant -> m (Auth0Response [GrantResponse])
+runGetGrants (TokenAuth tenant accessToken) o =
   let api = API Get "/api/v2/grants"
-  in execRequest a api (Just o) (Nothing :: Maybe ()) Nothing
+  in execRequest tenant api (Just o) (Nothing :: Maybe ()) (Just [mkAuthHeader accessToken])
 
 --------------------------------------------------------------------------------
 -- DELETE /api/v2/grants/{id}
 
 runDeleteGrant
   :: (MonadIO m, MonadThrow m)
-  => Auth -> Text -> Grant -> m (Auth0Response ())
-runDeleteGrant a i o =
+  => TokenAuth -> Text -> Grant -> m (Auth0Response ())
+runDeleteGrant (TokenAuth tenant accessToken) i o =
   let api = API Delete ("/api/v2/grants/" <> encodeUtf8 i)
-  in execRequest a api (Just o) (Nothing :: Maybe ()) Nothing
+  in execRequest tenant api (Just o) (Nothing :: Maybe ()) (Just [mkAuthHeader accessToken])

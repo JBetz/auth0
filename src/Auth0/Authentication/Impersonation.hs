@@ -6,7 +6,6 @@ module Auth0.Authentication.Impersonation where
 import Control.Monad.Catch (MonadThrow)
 import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson
-import Data.Aeson.Types
 import Data.ByteString
 import Data.Map
 import Data.Monoid ((<>))
@@ -49,6 +48,6 @@ instance ToJSON Impersonate where
 runImpersonate
   :: (MonadIO m, MonadThrow m)
   => Auth -> ByteString -> Impersonate -> m (Auth0Response Text)
-runImpersonate a uid o =
+runImpersonate (Auth tenant) uid o =
   let api = API Post ("/users/" <> uid <> "/impersonate")
-  in execRequest a api (Nothing :: Maybe ()) (Just o) Nothing
+  in execRequest tenant api (Nothing :: Maybe ()) (Just o) Nothing

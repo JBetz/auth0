@@ -6,7 +6,6 @@ module Auth0.Authentication.RevokeRefreshToken where
 import Control.Monad.Catch (MonadThrow)
 import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson
-import Data.Aeson.Types
 import Data.Text
 import GHC.Generics
 --------------------------------------------------------------------------------
@@ -30,6 +29,6 @@ instance ToJSON RevokeRefreshToken where
 runRevokeRefreshToken
   :: (MonadIO m, MonadThrow m)
   => Auth -> RevokeRefreshToken -> m (Auth0Response ())
-runRevokeRefreshToken a o =
+runRevokeRefreshToken (Auth tenant) o =
   let api = API Post "/oauth/revoke"
-  in execRequest a api (Nothing :: Maybe ()) (Just o) Nothing
+  in execRequest tenant api (Nothing :: Maybe ()) (Just o) Nothing
