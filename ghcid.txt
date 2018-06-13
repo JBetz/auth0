@@ -1,0 +1,5 @@
+src/Auth0/Management/Tickets.hs:10:1: warning: [-Wunused-imports]
+    The import of ‘Data.Aeson.TH’ is redundant
+   |
+10 | import Data.Aeson.TH
+   | ^^^^^^^^^^^^^^^^^^^^
