@@ -141,7 +141,7 @@ data UserCreate
   , emailVerified :: Maybe Bool
   , verifyEmail   :: Maybe Bool
   , phoneVerified :: Maybe Bool
-  , appMd   :: Maybe (Map Text Text)
+  , appMetadata   :: Maybe (Map Text Text)
   } deriving (Generic, Show)
 
 instance ToJSON UserCreate where
