@@ -144,13 +144,13 @@ data UserCreate appMd userMd
   , ucAppMetadata   :: Maybe appMd
   } deriving (Generic, Show)
 
-instance ToJSON UserCreate where
+instance (ToJSON appMd, ToJSON userMd) => ToJSON (UserCreate appMd userMd) where
   toJSON =
     genericToJSON defaultOptions { fieldLabelModifier = camelTo2 '_' }
 
 runCreateUser
-  :: (MonadIO m, MonadThrow m, FromJSON appMd, FromJSON userMd)
-  => Auth -> UserCreate -> m (Auth0Response (UserResponse appMd userMd))
+  :: (MonadIO m, MonadThrow m, FromJSON appMd, FromJSON userMd, ToJSON appMd, ToJSON userMd, Show appMd, Show userMd)
+  => Auth -> UserCreate appMd userMd -> m (Auth0Response (UserResponse appMd userMd))
 runCreateUser a o =
   let api = API Post "/api/v2/users"
   in execRequest a api (Nothing :: Maybe ()) (Just o) Nothing
@@ -191,8 +191,8 @@ runDeleteUser a i =
 -- PATCH /api/v2/users/{id}
 
 runUpdateUser
-  :: (MonadIO m, MonadThrow m, FromJSON appMd, FromJSON userMd)
-  => Auth -> Text -> UserCreate -> m (Auth0Response (UserResponse appMd userMd))
+  :: (MonadIO m, MonadThrow m, FromJSON appMd, FromJSON userMd, ToJSON appMd, ToJSON userMd, Show appMd, Show userMd)
+  => Auth -> Text -> UserCreate appMd userMd -> m (Auth0Response (UserResponse appMd userMd))
 runUpdateUser a i o =
   let api = API Update ("/api/v2/users/" <> encodeUtf8 i)
   in execRequest a api (Nothing :: Maybe ()) (Just o) Nothing
