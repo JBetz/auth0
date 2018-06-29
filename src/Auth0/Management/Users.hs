@@ -120,8 +120,8 @@ deriveJSON defaultOptions { fieldLabelModifier = camelTo2 '_' } ''UserResponse
 
 runGetUsers
   :: (MonadIO m, MonadThrow m, FromJSON appMd, FromJSON userMd)
-  => Auth -> Maybe User -> m (Auth0Response [UserResponse appMd userMd])
-runGetUsers a o =
+  => TokenAuth -> Maybe User -> m (Auth0Response [UserResponse appMd userMd])
+runGetUsers (TokenAuth tenant accessToken) o =
   let api = API Get "/api/v2/users"
   in execRequest tenant api o (Nothing :: Maybe ()) (Just [mkAuthHeader accessToken])
 

@@ -7,7 +7,6 @@ module Auth0.Management.Tickets where
 import Control.Monad.Catch (MonadThrow)
 import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson
-import Data.Aeson.TH
 import Data.Text
 import GHC.Generics
 --------------------------------------------------------------------------------
