@@ -10,9 +10,9 @@ import Control.Monad.Catch (MonadThrow)
 import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson
 import Data.Aeson.TH
-import Data.Map
+import Data.Map hiding (drop)
 import Data.Monoid ((<>))
-import Data.Text
+import Data.Text hiding (drop)
 import Data.Text.Encoding
 import GHC.Generics
 --------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ data ProfileData
   , pdFamilyName    :: Maybe Text
   } deriving (Generic, Show)
 
-deriveJSON defaultOptions { fieldLabelModifier = camelTo2 '_' } ''ProfileData
+deriveJSON defaultOptions { fieldLabelModifier = camelTo2 '_' . drop 2 } ''ProfileData
 
 data Identity
   = Identity
@@ -79,16 +79,16 @@ data Identity
 
 instance FromJSON Identity where
   parseJSON =
-    genericParseJSON defaultOptions { fieldLabelModifier = f }
+    genericParseJSON defaultOptions { fieldLabelModifier = f . drop 1 }
     where
-      f "isSocial" = "isSocial"
+      f "IsSocial" = "isSocial"
       f v          = camelTo2 '_' v
 
 instance ToJSON Identity where
   toJSON =
-    genericToJSON defaultOptions { fieldLabelModifier = f }
+    genericToJSON defaultOptions { fieldLabelModifier = f . drop 1 }
     where
-      f "isSocial" = "isSocial"
+      f "IsSocial" = "isSocial"
       f v          = camelTo2 '_' v
 
 data UserResponse appMd userMd
@@ -116,7 +116,7 @@ data UserResponse appMd userMd
   , urFamilyName    :: Maybe Text
   } deriving (Generic, Show)
 
-deriveJSON defaultOptions { fieldLabelModifier = camelTo2 '_' } ''UserResponse
+deriveJSON defaultOptions { fieldLabelModifier = camelTo2 '_' . drop 2 } ''UserResponse
 
 runGetUsers
   :: (MonadIO m, MonadThrow m, FromJSON appMd, FromJSON userMd)
@@ -147,7 +147,7 @@ data UserCreate appMd userMd
 
 instance (ToJSON appMd, ToJSON userMd) => ToJSON (UserCreate appMd userMd) where
   toJSON =
-    genericToJSON defaultOptions { fieldLabelModifier = camelTo2 '_' }
+    genericToJSON defaultOptions { fieldLabelModifier = camelTo2 '_' . drop 2 }
 
 runCreateUser
   :: (MonadIO m, MonadThrow m, FromJSON appMd, FromJSON userMd, ToJSON appMd, ToJSON userMd, Show appMd, Show userMd)
