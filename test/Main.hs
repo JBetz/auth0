@@ -1,6 +1,9 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Main where
 
 --------------------------------------------------------------------------------
+import Data.Aeson
 import qualified Data.ByteString.Char8 as BS (pack)
 import Data.Maybe
 import Data.Monoid ((<>))
@@ -77,18 +80,17 @@ main = do
           Just res' -> tokenType res' `shouldBe` "Bearer"
 
     describe "Management.Users" $
-      it "Retrieves Users Managed By Tenant" $ do
-        let auth = mkAuth ((BS.pack . fromJust) tnt) ""
+      it "Get Users" $ do
+        let auth = mkAuth ((BS.pack . fromJust) tnt)
             pay = GetTokenClientCreds
                   ClientCredentials
                   (mkClientId . pack . fromJust $ cid)
                   (mkClientSecret . pack . fromJust $ cst)
                   (pack . fromJust $ aud)
-        token <- liftIO $ runGetToken auth pay
-        let tokenAuth = mkTokenAuth ((BS.pack . fromJust) tnt) token
-        res <- runGetUsers tokenAuth Nothing
+        tknResponse <- runGetToken auth pay
+        let tokenAuth = fromJust $ do
+             tkn <- accessToken <$> resPayload tknResponse
+             pure $ mkTokenAuth ((BS.pack . fromJust) tnt) tkn
+        res :: Auth0Response [UserResponse Value Value] <- runGetUsers tokenAuth Nothing
         resError res `shouldBe` Nothing
         isJust (resPayload res) `shouldBe` True
-        case resPayload res of
-          Nothing   -> return ()
-          Just res' -> length res' `shouldBe` 0
