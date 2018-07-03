@@ -1,3 +1,4 @@
 dist
+dist-newstyle
 .env
-ghcid.txt
+
