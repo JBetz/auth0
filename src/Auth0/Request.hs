@@ -6,7 +6,7 @@ module Auth0.Request where
 
 --------------------------------------------------------------------------------
 import Control.Monad.Catch (MonadThrow)
-import Control.Monad.IO.Class (MonadIO)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Aeson
 import Data.ByteString (ByteString)
 import Data.Map
