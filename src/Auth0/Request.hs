@@ -53,9 +53,9 @@ execRequest t (API m p) a b hs = do
     in case code of
       200 ->
         case eitherDecode body :: Either String c of
-          Left _ -> return resp
+          Left decodeErr -> liftIO (putStrLn decodeErr) >> return resp
           Right response -> return $ resp { resPayload = Just response }
       _   ->
         case eitherDecode body :: Either String Auth0Error of
-          Left _ -> return resp
+          Left decodeErr -> liftIO (putStrLn decodeErr) >> return resp
           Right err'     -> return $ resp { resError = Just err' }
